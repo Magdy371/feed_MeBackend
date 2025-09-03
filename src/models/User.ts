@@ -6,7 +6,10 @@ const userSchema = new Schema<IUser>({
     email: {type: String, required: true, unique: true,match:[/^[a-zA-Z0-9._%+-]+@gmail\.com$/, "Only Gmail addresses allowed"]},
     password: {type: String, required: true},
     age: {type: Number, required: false,min:0},
-    isVerified: {type: Boolean, default: false}
+    isVerified: {type: Boolean, default: false},
+    role: {type: String, enum: ['user', 'admin'], default: 'user'},
+    verificationCode: {type: Number}
+
 }, {
     timestamps: true
 });
