@@ -5,6 +5,8 @@ import  User  from '../models/User';
 import asynHandler from 'express-async-handler';
 import ApiErrors from "../utils/ApiErrors";
 import {sendVerificationEmail} from "../utils/sendEmail";
+import asyncHandler from "express-async-handler";
+import {updateUser} from '../controllers/userController';
 
 const generateVerificationCode = ()=>Math.floor(100000 + Math.random() * 900000);
 const register = asynHandler(
@@ -54,4 +56,34 @@ const verifyUser = asynHandler(
         res.status(200).json({message: 'User verified successfully',isVerified: user.isVerified});
     }
 );
+const userLogin = asyncHandler(
+    async (req:Request, res:Response,next:NextFunction)=>{
+        const {email, password} = req.body;
+        if(!email || !password){
+            return next(new ApiErrors('Email and password are required',400));
+        }
+        const user = await User.findOne({email});
+        if(!user){
+            return next(new ApiErrors('Invalid email or password',401));
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch){
+            return next(new ApiErrors('Invalid email or password',401));
+        }
+        if(!user.isVerified){
+            return next(new ApiErrors('Please verify your email before logging in',403));
+        }
+        if(user.isDeleted){
+            return next(new ApiErrors('User account is deactivated',403));
+        }
+
+        const payload = { id: user._id, role: user.role };
+        const secret = process.env.JWT_SECRET as unknown as jwt.Secret;
+        const expiresIn = (process.env.JWT_EXPIRES_IN as string) || '1h';
+        const token = jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
+        res.status(200).json({message: 'Login successful', token});
+    }
+);
+
+
 export {register, verifyUser}
