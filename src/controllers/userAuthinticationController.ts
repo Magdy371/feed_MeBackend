@@ -6,7 +6,6 @@ import asynHandler from 'express-async-handler';
 import ApiErrors from "../utils/ApiErrors";
 import {sendVerificationEmail} from "../utils/sendEmail";
 import asyncHandler from "express-async-handler";
-import {updateUser} from '../controllers/userController';
 
 const generateVerificationCode = ()=>Math.floor(100000 + Math.random() * 900000);
 const register = asynHandler(
@@ -86,4 +85,4 @@ const userLogin = asyncHandler(
 );
 
 
-export {register, verifyUser}
+export {register, verifyUser,userLogin}
