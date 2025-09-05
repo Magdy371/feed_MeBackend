@@ -3,9 +3,11 @@ dotenv.config();
 
 import connectDB from './config/db';
 import userAuthinticationRoute from './routes/userAuthinticationRoute';
+import userRoutes from "./routes/userRoutes";
 import {Response, Request, NextFunction} from "express";
 import express from 'express';
 import ApiErrors from './utils/ApiErrors';
+import authMiddleware from './middlewares/userAutherization'
 import globalErroHandler from './middlewares/globalErrorHandling';
 
 const PORT = process.env.PORT || 8000;
@@ -13,6 +15,7 @@ const server = express();
 
 server.use(express.json());
 server.use('/api/v1/auth', userAuthinticationRoute);
+server.use('/api/v1/users',authMiddleware ,userRoutes);
 
 server.use((req:Request, res:Response, next:NextFunction) => {
     next(new ApiErrors(`Cannot go to this route ${req.originalUrl}`, 404));

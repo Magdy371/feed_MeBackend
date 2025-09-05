@@ -10,4 +10,5 @@ export interface IUser extends Document{
     createdAt: Date;
     updatedAt: Date;
     verificationCode?: number;
+    isDeleted?: boolean;
 }

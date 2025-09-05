@@ -8,7 +8,8 @@ const userSchema = new Schema<IUser>({
     age: {type: Number, required: false,min:0},
     isVerified: {type: Boolean, default: false},
     role: {type: String, enum: ['user', 'admin'], default: 'user'},
-    verificationCode: {type: Number}
+    verificationCode: {type: Number},
+    isDeleted: {type: Boolean, default: false}
 
 }, {
     timestamps: true
