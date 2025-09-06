@@ -35,6 +35,13 @@ const createRestaurant = asyncHandler(
 
 const getRestaurants = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
+        const resturamt = await Restaurant.find().populate("category", "name");
+        res.status(200).json({success: true, message: "Restaurants fetched successfully", data: resturamt,});
+    }
+);
+
+const getRestaurant = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
         const { city, category } = req.query;
         const filter: any = {};
         if (city) filter.city = city;
@@ -71,4 +78,4 @@ const deleteRestaurant = asyncHandler(
     }
 );
 
-export { createRestaurant, getRestaurants, deleteRestaurant };
+export { createRestaurant, getRestaurant, getRestaurants, deleteRestaurant };

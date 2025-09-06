@@ -76,3 +76,4 @@ const deleteFoodCategory = asyncHandler(
         res.status(200).json({message: 'Food category deleted successfully'});
     }
 );
+export {createFoodCategory, categoryList, getFoodCategory, updateFoodCategory, deleteFoodCategory};
