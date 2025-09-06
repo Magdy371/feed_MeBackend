@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import {model, Types} from "mongoose";
 
 export interface IRestaurant {
     name: string;
