@@ -2,6 +2,7 @@ import ApiErrors from "../utils/ApiErrors";
 import { AuthorizationRequest } from "../middlewares/userAutherization";
 import { Request, Response, NextFunction } from "express";
 import Restaurant from "../models/ResturantCategory"; // corrected spelling
+import mongoose from "mongoose";
 import FoodCategory from "../models/FoodCategory";
 import asyncHandler from "express-async-handler";
 
@@ -40,26 +41,39 @@ const getRestaurants = asyncHandler(
     }
 );
 
+
 const getRestaurant = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
         const { city, category } = req.query;
         const filter: any = {};
+
         if (city) filter.city = city;
+
         if (category) {
-            const categoryDoc = await FoodCategory.findOne({$or: [{ _id: category }, { name: category }],});
-            if (categoryDoc) {
-                filter.category = categoryDoc._id;
+            let categoryDoc;
+            if (mongoose.Types.ObjectId.isValid(category as string)) {
+                categoryDoc = await FoodCategory.findById(category);
             } else {
+                categoryDoc = await FoodCategory.findOne({ name: category });
+            }
+
+            if (!categoryDoc) {
                 return next(new ApiErrors("Category not found", 404));
             }
-        }
-        const restaurants = await Restaurant.find(filter).populate(
-            "category",
-            "name");
 
-        res.status(200).json({success: true, message: "Restaurants fetched successfully", data: restaurants,});
+            filter.category = categoryDoc._id;
+        }
+
+        const restaurants = await Restaurant.find(filter).populate("category", "name");
+
+        res.status(200).json({
+            success: true,
+            message: "Restaurants fetched successfully",
+            data: restaurants,
+        });
     }
 );
+
 
 const deleteRestaurant = asyncHandler(
     async (req: AuthorizationRequest, res: Response, next: NextFunction) => {

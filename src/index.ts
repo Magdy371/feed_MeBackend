@@ -18,8 +18,8 @@ const server = express();
 server.use(express.json());
 server.use('/api/v1/auth', userAuthinticationRoute);
 server.use('/api/v1/users',authMiddleware ,userRoutes);
-server.use('/api/v1/foodCategory', foodCategoryRoute);
-server.use('/api/v1/resturants', resturantRoute);
+server.use('/api/v1/foodCategory', authMiddleware,foodCategoryRoute);
+server.use('/api/v1/resturants', authMiddleware,resturantRoute);
 
 // Handle undefined routes
 server.use((req:Request, res:Response, next:NextFunction) => {

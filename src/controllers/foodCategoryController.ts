@@ -1,6 +1,6 @@
 import ApiErrors from '../utils/ApiErrors';
 import {AuthorizationRequest} from "../middlewares/userAutherization";
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import FoodCategory from '../models/FoodCategory';
 import asyncHandler from 'express-async-handler';
 
@@ -19,10 +19,7 @@ const createFoodCategory = asyncHandler(
     }
 );
 const categoryList = asyncHandler(
-    async (req:AuthorizationRequest, res:Response, next:NextFunction) => {
-        if(req.user?.role !== 'admin'){
-            return next(new ApiErrors('Forbidden: Admins only',403));
-        }
+    async (req:Request, res:Response, next:NextFunction) => {
         const categories = await FoodCategory.find();
         if(categories.length === 0){
             return next(new ApiErrors('No food categories found',404));
@@ -32,11 +29,8 @@ const categoryList = asyncHandler(
 );
 
 const getFoodCategory = asyncHandler(
-    async (req:AuthorizationRequest, res:Response, next:NextFunction) => {
+    async (req:Request, res:Response, next:NextFunction) => {
         const {id} = req.params;
-        if(req.user?.role !== 'admin'){
-            return next(new ApiErrors('Forbidden: Admins only',403));
-        }
         const category = await FoodCategory.findById(id);
         if(!category){
             return next(new ApiErrors('Food category not found',404));
